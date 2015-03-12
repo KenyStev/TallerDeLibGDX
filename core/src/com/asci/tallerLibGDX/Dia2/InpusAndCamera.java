@@ -10,11 +10,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
-public class InpusAndCamera extends ApplicationAdapter{
+public class InpusAndCamera extends ApplicationAdapter {
+	
+	/*
+	 * Nuestra camara nos va a servir para saber que es lo que se mostrara en la pantalla de nuestro programa
+	 * en este caso para juegos 2D usaremos la OrthographicCamera.
+	 */
 	private OrthographicCamera camera;
+	
 	private SpriteBatch batch;
 	private ShapeRenderer sr;
-	
 	private Texture texture;
 	
 	float width=680, height=680;
@@ -23,11 +28,25 @@ public class InpusAndCamera extends ApplicationAdapter{
 	public void create() {
 		super.create();
 		
-		batch = new SpriteBatch();
+		/*
+		 * Inizializamos nuestra camara con el ancho y el alto que tendra nuestro viewport.
+		 * 
+		 * los metodos Gdx.graphics.getWidth() y Gdx.graphics.getHeight() son metodos que nos
+		 * devuelven el ancho y alto respectivamente de la ventana donde esta corriendo nuestra aplicacion 
+		 */
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		
+		batch = new SpriteBatch();
 		sr = new ShapeRenderer();
 		
-		texture = new Texture("Car.png");
+		texture = new Texture("vehiculos/Car.png");
+		
+		/*
+		 * con setInputProcessor cambiamos el encargado de controlar el procesador de entrada de nuetra app.
+		 * en este caso le mandamos un objeto de nuestro procesador de entrada DesktopListener 
+		 * con nuestro atributo camara
+		 */
+		Gdx.input.setInputProcessor(new DesktopListener(this.camera));
 	}
 	
 	@Override
@@ -39,12 +58,29 @@ public class InpusAndCamera extends ApplicationAdapter{
 		
 		checkoutControls();
 		
+		/*
+		 * simpre que se le hace una modificacion a nuestra camara debemos darle un update
+		 * y como eso pasa casi siempre en la mayoria de los casos, por eso la mandamos a llamar en el render.
+		 */
 		camera.update();
 		
+		/*
+		 * con setProjectionMatrix se indicamos a nustro spritebatch que matriz va a usar para mostrar los assets
+		 * en este caso la matriz combined que tiene la camara para que se mueva junto con la camara.
+		 */
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		batch.draw(texture, 100, 100);
 		batch.end();
+		
+		/*
+		 * con Gdx.input.isKeyJustPressed verificamos de forma directa si un boton esta siendo presionado.
+		 * muy bueno para hacer debugs pero no recomendado para manejar los controladores de nuestro juego.
+		 */
+		if(Gdx.input.isKeyJustPressed(Keys.B)){
+			System.out.println("Fue Presionada B");
+		}
+		
 	}
 	
 	@Override
@@ -72,6 +108,10 @@ public class InpusAndCamera extends ApplicationAdapter{
 		boolean Left = Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT);
 		boolean Right = Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT);
 		
+		/*
+		 * verficamos cual esta siendo presionado y actualizamos la posicion de nuestra camara respectivamente
+		 * hacia la derecha, izquierda, arriba ,abajo, aumentarZoom y disminuirZoom.
+		 */
 		if (Left && !Right) {
 			camera.translate(-move, 0);
 		}
