@@ -7,9 +7,9 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 /**
  * Esta es la clase donde ira toda la logica de juego de nuestro juego
  * @author kenystev
@@ -18,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 public class PantallaGame extends AbstractScreen implements InputProcessor{
 
 	private ArrayList<Sprite> balls;
+	private Stage stage;
+	private Image miActor;
 	
 	public PantallaGame(UsoDeScreens game) {
 		super(game);
@@ -27,6 +29,18 @@ public class PantallaGame extends AbstractScreen implements InputProcessor{
 	@Override
 	public void show() {
 		balls = new ArrayList<Sprite>();
+		stage = new Stage(new FitViewport(680, 680, camera), game.batch);
+		
+		miActor = new Image(new Texture("Poke-Ball.png")){
+			@Override
+			public void act(float delta) {
+				super.act(delta);
+				setX(getX()+1);
+			}
+		};
+		
+		stage.addActor(miActor);
+		
 		Gdx.input.setInputProcessor(this);
 	}
 	
@@ -35,6 +49,9 @@ public class PantallaGame extends AbstractScreen implements InputProcessor{
 		super.render(delta);
 		
 		drawBalls();
+		
+		stage.act();
+		stage.draw();
 	}
 
 	@Override
@@ -44,7 +61,7 @@ public class PantallaGame extends AbstractScreen implements InputProcessor{
 
 	@Override
 	public void dispose() {
-		
+		stage.dispose();
 	}
 	
 	public void winer(int x, int y){
